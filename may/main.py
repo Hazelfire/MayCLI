@@ -5,28 +5,36 @@ import os
 import sys
 import json
 import argparse
+import click
 from datetime import datetime, timezone
 import requests
 import dateparser
 from dateutil.parser import parse
 from .todo import get_todo, get_due_dates, parse_timedelta
-headers = {"authorization": "Token " +
-           os.environ["MAY_TOKEN"], "Content-Type": "application/json"}
-baseurl = 'https://api.may.hazelfire.net/taskapi/'
+from .cli import cli
+
+headers = {
+    "authorization": "Token " + os.environ["MAY_TOKEN"],
+    "Content-Type": "application/json",
+}
+baseurl = "http://localhost:8000/taskapi/"
 
 
 def get_folders():
-    return requests.get(baseurl + 'folders/', headers=headers).json()
+    return requests.get(baseurl + "folders/", headers=headers).json()
 
 
 def get_tasks():
-    return requests.get(baseurl + 'tasks/', headers=headers).json()
+    return requests.get(baseurl + "tasks/", headers=headers).json()
 
 
 def parse_date(dateString):
-    return dateparser.parse(dateString, settings={
-        'PREFER_DATES_FROM': 'future'
-    }).isoformat() + "Z"
+    return (
+        dateparser.parse(
+            dateString, settings={"PREFER_DATES_FROM": "future"}
+        ).isoformat()
+        + "Z"
+    )
 
 
 def get_root(folders):
@@ -63,11 +71,20 @@ def list_subparser(subparsers):
     """ List all tasks """
     parser = subparsers.add_parser("list", help=list_subparser.__doc__)
     parser.add_argument(
-        "--due", "-d", help="Only select have due dates", action="store_true")
+        "--due", "-d", help="Only select have due dates", action="store_true"
+    )
     parser.add_argument(
-        "--incomplete", "-i", help="Only select tasks that aren't done", action="store_true")
+        "--incomplete",
+        "-i",
+        help="Only select tasks that aren't done",
+        action="store_true",
+    )
     parser.add_argument(
-        "--orphaned", "-o", help="Only select tasks that don't have due dates and are not done", action="store_true")
+        "--orphaned",
+        "-o",
+        help="Only select tasks that don't have due dates and are not done",
+        action="store_true",
+    )
 
     def run(args):
         tasks = get_tasks()
@@ -76,8 +93,7 @@ def list_subparser(subparsers):
         if args.incomplete:
             tasks = [task for task in tasks if not task["done"]]
         if args.orphaned:
-            tasks = [task for task in tasks if not task["done"]
-                     and not task["due"]]
+            tasks = [task for task in tasks if not task["done"] and not task["due"]]
         for task in tasks:
             print("{} - {}".format(task["id"], task["name"]))
 
@@ -92,10 +108,11 @@ def complete_subparser(subparsers):
 
     def run(args):
         response = requests.patch(
-            baseurl + 'tasks/' + args.id + "/",
+            baseurl + "tasks/" + args.id + "/",
             headers=headers,
-            data=json.dumps({"done": True})
+            data=json.dumps({"done": True}),
         )
+
     parser.set_defaults(run=run)
     return parser
 
@@ -104,7 +121,11 @@ def ls_subparser(subparsers):
     """ Lists items in a given folder """
     parser = subparsers.add_parser("ls", help=ls_subparser.__doc__)
     parser.add_argument(
-        "path", nargs="?", help="The path that you want to list the contents of", default="")
+        "path",
+        nargs="?",
+        help="The path that you want to list the contents of",
+        default="",
+    )
 
     def run(args):
         if args.path:
@@ -125,8 +146,7 @@ def ls_subparser(subparsers):
 def mkdir_subparser(subparsers):
     """ Makes a folder given a path """
     parser = subparsers.add_parser("mkdir", help=mkdir_subparser.__doc__)
-    parser.add_argument(
-        "path", help="The path that you want to make the folder")
+    parser.add_argument("path", help="The path that you want to make the folder")
 
     def run(args):
         path = args.path.split("/")
@@ -136,7 +156,7 @@ def mkdir_subparser(subparsers):
         requests.post(
             baseurl + "folders/",
             json={"name": name, "parent": target["id"]},
-            headers=headers
+            headers=headers,
         )
 
     parser.set_defaults(run=run)
@@ -146,33 +166,24 @@ def mkdir_subparser(subparsers):
 def new_subparser(subparsers):
     """ Makes a new task """
     parser = subparsers.add_parser("new", help=new_subparser.__doc__)
-    parser.add_argument(
-        "path",
-        help="The path where you want the task"
-    )
+    parser.add_argument("path", help="The path where you want the task")
     parser.add_argument(
         "--duration",
         help="The duration of the task in hours",
         type=float,
-        required=True
+        required=True,
     )
 
-    parser.add_argument(
-        "--due",
-        help="When the task is due"
-    )
+    parser.add_argument("--due", help="When the task is due")
 
     parser.add_argument(
         "--dependency",
         help="Comma seperated tasks that need to be completed before this one",
         action="append",
-        default=[]
+        default=[],
     )
 
-    parser.add_argument(
-        "--labels",
-        help="Comma seperated labels to do with this task"
-    )
+    parser.add_argument("--labels", help="Comma seperated labels to do with this task")
 
     def run(args):
         path = args.path.split("/")
@@ -187,10 +198,11 @@ def new_subparser(subparsers):
                 "parent": target["id"],
                 "duration": args.duration * 60 * 60,
                 "due": parse_date(args.due) if args.due else None,
-                "dependencies": args.dependency
+                "dependencies": args.dependency,
             },
-            headers=headers
+            headers=headers,
         )
+        print(response.text)
         return 0 if response.status_code == 201 else 1
 
     parser.set_defaults(run=run)
@@ -200,30 +212,19 @@ def new_subparser(subparsers):
 def edit_subparser(subparsers):
     """ Edits a task """
     parser = subparsers.add_parser("edit", help=new_subparser.__doc__)
+    parser.add_argument("task", help="The id of the task you are referring to")
     parser.add_argument(
-        "task",
-        help="The id of the task you are referring to"
-    )
-    parser.add_argument(
-        "--duration",
-        help="The duration of the task in hours",
-        type=float,
+        "--duration", help="The duration of the task in hours", type=float
     )
 
-    parser.add_argument(
-        "--due",
-        help="When the task is due"
-    )
+    parser.add_argument("--due", help="When the task is due")
 
     parser.add_argument(
         "--dependencies",
-        help="Comma seperated tasks that need to be completed before this one"
+        help="Comma seperated tasks that need to be completed before this one",
     )
 
-    parser.add_argument(
-        "--labels",
-        help="Comma seperated labels to do with this task"
-    )
+    parser.add_argument("--labels", help="Comma seperated labels to do with this task")
 
     def run(args):
         patches = {}
@@ -238,9 +239,7 @@ def edit_subparser(subparsers):
             patches["dependencies"] = args.dependencies.split(",")
 
         response = requests.patch(
-            baseurl + "tasks/" + args.task + "/",
-            json=patches,
-            headers=headers
+            baseurl + "tasks/" + args.task + "/", json=patches, headers=headers
         )
 
     parser.set_defaults(run=run)
@@ -249,40 +248,42 @@ def edit_subparser(subparsers):
 
 def todo_subparser(subparsers):
     """ Gives the tasks that need to be done in priority order """
-    parser = subparsers.add_parser(
-        "todo", help=todo_subparser.__doc__)
+    parser = subparsers.add_parser("todo", help=todo_subparser.__doc__)
 
     def run(args):
         tasks = get_tasks()
         todo = get_todo(tasks)
         for task in todo:
             print("{} - {}".format(task["id"], task["name"]))
+
     parser.set_defaults(run=run)
 
 
 def print_task(task):
-    print("{} - {} ({})\nDuration: {} hours\nDue: {}\nDependencies:\n{}".format(
-        task["id"],
-        task["name"],
-        "completed" if task["done"] else "not complete",
-        task["duration"],
-        task["due"] if task["due"] else "No Due date",
-        "\n".join([" - " + dependency for dependency in task['dependencies']])
-    ))
+    print(
+        "{} - {} ({})\nDuration: {} hours\nDue: {}\nDependencies:\n{}".format(
+            task["id"],
+            task["name"],
+            "completed" if task["done"] else "not complete",
+            task["duration"],
+            task["due"] if task["due"] else "No Due date",
+            "\n".join([" - " + dependency for dependency in task["dependencies"]]),
+        )
+    )
 
 
 def print_subparser(subparsers):
     """ Print the task details """
     parser = subparsers.add_parser("print", help=print_subparser.__doc__)
 
-    parser.add_argument(
-        "task", help="the id of the task that you want to print")
+    parser.add_argument("task", help="the id of the task that you want to print")
 
     def run(args):
         tasks = get_tasks()
         for task in tasks:
             if task["id"] == args.task:
                 print_task(task)
+
     parser.set_defaults(run=run)
     return parser
 
@@ -303,8 +304,7 @@ def urgency_subparser(subparsers):
             return due_dates[task["id"]].timestamp()
 
         tasks_not_done = [
-            task for task in tasks
-            if (not task["done"]) and task["id"] in due_dates
+            task for task in tasks if (not task["done"]) and task["id"] in due_dates
         ]
 
         tasks_not_done.sort(key=get_due)
@@ -316,13 +316,11 @@ def urgency_subparser(subparsers):
 
         for task in tasks_not_done:
             current_due = due_dates[task["id"]]
-            days_from_now = (
-                current_due - now).total_seconds() / (60 * 60 * 24)
+            days_from_now = (current_due - now).total_seconds() / (60 * 60 * 24)
             if days_from_now < 0:
                 print("Overdue_task: {}".format(task["name"]))
-                urgency += float('inf')
-            extra_days = (
-                current_due - last_due).total_seconds() / (60 * 60 * 24)
+                urgency += float("inf")
+            extra_days = (current_due - last_due).total_seconds() / (60 * 60 * 24)
             extra_time += extra_days * urgency
 
             time_left = max(0, get_hours(task["duration"]) - extra_time)
@@ -354,4 +352,4 @@ def main():
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    sys.exit(cli())

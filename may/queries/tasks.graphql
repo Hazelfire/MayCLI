@@ -1,0 +1,10 @@
+query getTasks {
+  allTasks {
+    edges {
+      node {
+        id
+        name
+      }
+    }
+  }
+}
