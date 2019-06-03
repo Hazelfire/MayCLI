@@ -1,0 +1,18 @@
+<query>
+mutation addTask($input: TaskCreateMutationInput!){
+  addTask(input: $input) {
+    id
+    name
+  }
+}
+</query>
+<display>
+{% if data %}
+{% set task = data.addTask %}
+Successfully created task!
+  Id: {{task.id}}
+  Name: {{task.name}}
+{% else %}
+Error creating task: {{ errors }}
+{% endif %}
+</display>

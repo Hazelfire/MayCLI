@@ -8,3 +8,10 @@ query getTasks {
     }
   }
 }
+
+mutation addTask($task: TaskCreateMutationInput!) {
+  addTask(input: $task) {
+    id
+    name
+  }
+}

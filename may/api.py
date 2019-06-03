@@ -31,7 +31,7 @@ def graphql(query_file, operation, parameters = {}):
         },
     )
     result = response.json()
-    if not "data" in result:
+    if "errors" in result:
         raise GraphQLException("\n".join([error["message"] for error in result["errors"]]))
 
     return result["data"]
@@ -52,6 +52,15 @@ class MayApi:
     def get_tasks(self):
         """ Returns a list of tasks from the backend """
         return [node["node"] for node in graphql("tasks.graphql", "getTasks")["allTasks"]["edges"]]
+
+    def add_task(self, name, duration):
+        """ Adds a task to the backend """
+        return graphql("tasks.graphql", "addTask", {
+            'task': {
+                'name': name,
+                'duration': duration
+            }
+        })["addTask"]
 
     def get_folders(self):
         return requests.get(

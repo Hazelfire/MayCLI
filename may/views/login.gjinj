@@ -1,0 +1,15 @@
+<query>
+mutation login($username: String!, $password: String!){
+  tokenAuth(username: $username, password: $password){
+    token 
+  }
+}
+</query>
+<display>
+{% if data %}
+Successfully logged in!
+  Token: {{data.tokenAuth.token}}
+{% else %}
+Error loging in: {{ errors }}
+{% endif %}
+</display>

@@ -5,10 +5,47 @@ Email: sam.nolan@rmit.edu.au
 Github: https://github.com/Hazelfire
 Description: A click cli for may
 """
+from functools import wraps
+from importlib.resources import read_text
 import click
 
 from .api import MayApi, GraphQLException
-from .config import save_token, has_token, get_token
+from quickconfig import Config
+from graphjinj import run
+
+conf = Config("may")
+BASE_URL = "http://localhost:8000/graphql"
+
+def fails_gracefully(command):
+    """ Wraps a command so that it fails gracefully when exceptions are thrown """
+    @wraps(command)
+    def wrapper(*args, **kwargs):
+        try:
+            command(*args, **kwargs)
+        except GraphQLException as e:
+            click.echo("GraphQL Error: " + str(e), err=True)
+    return wrapper
+
+def requires_auth(command):
+    """ Wrapper for commands that require auth before executing """
+    @wraps(command)
+    @fails_gracefully
+    def wrapper(*args, **kwargs):
+        if "token" in conf:
+            click.echo("Operation requires logging in, try may login", err=True)
+            return
+        command(*args, **kwargs)
+    return wrapper
+
+def run_view(template, variables=None):
+    """ Runs a may view """
+    if not variables:
+        variables = {}
+    return run(
+        BASE_URL,
+        read_text("may.views", template),
+        variables,
+    )
 
 
 @click.group()
@@ -17,23 +54,41 @@ def cli():
 
 
 @cli.command()
+@fails_gracefully
 def login():
     """ Logs the token to file """
     username = click.prompt("Username")
     password = click.prompt("Password")
-    try:
-        token = MayApi.login(username, password)
-        save_token(token)
-        click.echo("Successfully logged in")
-    except GraphQLException as e:
-        click.echo("GraphQL Error: " + str(e), err=True)
 
-@cli.command()
-def tasks():
-    """ Returns a list of tasks """
-    if not has_token():
-        click.echo("Operation requires logging in, try may login", err=True)
+    result = run_view(
+        "login.gjinj",
+        {'username': username, 'password': password}
+    )
+    if "data" in result.json:
+        conf["token"] = result.json["data"]["tokenAuth"]["token"]
+    click.echo(result.display)
 
-    token = get_token()
-    api = MayApi(token)
-    click.echo("\n".join([task["name"] for task in api.get_tasks()]))
+@cli.group()
+def task():
+    """ task related commands """
+
+@task.command(name="add")
+@click.argument("name")
+@click.argument("duration", type=int)
+@fails_gracefully
+def task_add(name, duration):
+    """ adds a task """
+    click.echo(run_view("addTask.gjinj", {
+        'input': {
+            'name': name,
+            'duration': duration
+        }
+    }).display)
+
+
+
+@task.command(name="list")
+@fails_gracefully
+def task_list():
+    """ returns a list of tasks """
+    click.echo(run_view("getTasks.gjinj").display)

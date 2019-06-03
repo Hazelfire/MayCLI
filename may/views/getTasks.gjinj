@@ -1,0 +1,25 @@
+<query>
+query getTasks{
+  allTasks {
+    edges {
+      node {
+        id
+        name
+      }
+    }
+  }
+}
+</query>
+
+<display>
+{% if data %}
+Tasks:
+{% if data.allTasks.edges | length == 0 %}You don't have any tasks{% endif %}
+{% for task in data.allTasks.edges %}
+  - {{ task.node.name }}
+{% endfor %}
+
+{% else %}
+Error loging in: {{ errors }}
+{% endif %}
+</display>
