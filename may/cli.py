@@ -8,6 +8,7 @@ Description: A click cli for may
 from functools import wraps
 from importlib.resources import read_text
 import click
+from requests.exceptions import ConnectionError
 
 from .api import MayApi, GraphQLException
 from quickconfig import Config
@@ -24,6 +25,8 @@ def fails_gracefully(command):
             command(*args, **kwargs)
         except GraphQLException as e:
             click.echo("GraphQL Error: " + str(e), err=True)
+        except ConnectionError as e:
+            click.echo("Could not connect to url")
     return wrapper
 
 def requires_auth(command):
