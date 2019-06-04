@@ -9,6 +9,7 @@ from functools import wraps
 from importlib.resources import read_text
 import click
 from requests.exceptions import ConnectionError
+import requests
 
 from .api import MayApi, GraphQLException
 from quickconfig import Config
@@ -42,12 +43,16 @@ def requires_auth(command):
 
 def run_view(template, variables=None):
     """ Runs a may view """
+    session = requests.Session()
     if not variables:
         variables = {}
+    if "token" in conf:
+        session.headers.update({"Authorization": "JWT " + conf["token"]})
     return run(
         BASE_URL,
         read_text("may.views", template),
         variables,
+        session=session,
     )
 
 

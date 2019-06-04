@@ -12,7 +12,7 @@ query getTasks{
 </query>
 
 <display>
-{% if data %}
+{% if not errors %}
 Tasks:
 {% if data.allTasks.edges | length == 0 %}You don't have any tasks{% endif %}
 {% for task in data.allTasks.edges %}
