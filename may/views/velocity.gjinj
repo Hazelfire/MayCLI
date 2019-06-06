@@ -1,0 +1,17 @@
+<command>
+Usage: may velocity [--help]
+
+Returns how fast your urgency is increasing in urgency per day
+</command>
+<query>
+query urgency{
+  statistics {velocity}
+}
+</query>
+<display>
+{% if not errors %}
+{{data.statistics.velocity}}
+{% else %}
+Error loading velocity
+{% endif %}
+</display>
