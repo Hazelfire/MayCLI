@@ -1,0 +1,23 @@
+<command>
+Usage: may statistics [--help]
+
+Queries for the main may statistics
+</command>
+<query>
+query urgency{
+  statistics {
+    urgency
+    velocity
+    bait
+  }
+}
+</query>
+<display>
+{% if not errors %}
+Urgency: {{data.statistics.urgency}}
+Velocity: {{data.statistics.velocity}}
+Bait: {{data.statistics.bait}}
+{% else %}
+Error loading statistics: {{errors}}
+{% endif %}
+</display>

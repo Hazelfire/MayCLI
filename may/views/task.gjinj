@@ -1,5 +1,16 @@
 <command>
-Usage: may task [--help]
+Usage: may task [-i] [--help] [SUBCOMMAND]
+
+Options:
+  -i      Prints with task ids
+  --help  Prints this help screen 
+
+
+Lists all tasks on its own, has the following subcommands:
+Subcommands:
+  add       Adds a new task
+  complete  Completes a task
+
 </command>
 <query>
 query getTasks{
@@ -20,7 +31,7 @@ query getTasks{
 Tasks:
 {% if data.allTasks.edges | length == 0 %}You don't have any tasks{% endif -%}
 {% for task in data.allTasks.edges -%}
-  - {{task.node.id}} {{ task.node.name }} {{"Done" if task.node.done else "Incomplete"}}
+  - {{task.node.id if args["-i"] }} {{ task.node.name }}
 {% endfor %}
 
 {% else %}
