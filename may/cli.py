@@ -48,12 +48,13 @@ def run_view(template, variables=None):
         variables = {}
     if "token" in conf:
         session.headers.update({"Authorization": "JWT " + conf["token"]})
-    return run(
+    res = run(
         BASE_URL,
         read_text("may.views", template),
         variables,
         session=session,
     )
+    return res
 
 
 @click.group()
@@ -93,6 +94,16 @@ def task_add(name, duration):
         }
     }).display)
 
+@task.command(name="complete")
+@click.argument("taskid")
+@fails_gracefully
+def task_complete(taskid):
+    """ complete a task """
+    click.echo(run_view("completeTask.gjinj", {
+        'input': {
+            'id': taskid
+        }
+    }).display)
 
 
 @task.command(name="list")

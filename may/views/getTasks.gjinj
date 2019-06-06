@@ -5,6 +5,7 @@ query getTasks{
       node {
         id
         name
+        done
       }
     }
   }
@@ -14,9 +15,9 @@ query getTasks{
 <display>
 {% if not errors %}
 Tasks:
-{% if data.allTasks.edges | length == 0 %}You don't have any tasks{% endif %}
-{% for task in data.allTasks.edges %}
-  - {{ task.node.name }}
+{% if data.allTasks.edges | length == 0 %}You don't have any tasks{% endif -%}
+{% for task in data.allTasks.edges -%}
+  - {{task.node.id}} {{ task.node.name }} {{"Done" if task.node.done else "Incomplete"}}
 {% endfor %}
 
 {% else %}
