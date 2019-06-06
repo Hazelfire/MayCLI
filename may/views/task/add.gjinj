@@ -1,3 +1,11 @@
+<command>
+Usage: may task add NAME DURATION
+</command>
+<variables>
+input:
+  name: {{NAME}}
+  duration: {{DURATION}}
+</variables>
 <query>
 mutation addTask($input: CreateTaskMutationInput!){
   taskAdd(input: $input) {

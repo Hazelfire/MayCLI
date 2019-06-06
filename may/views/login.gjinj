@@ -1,3 +1,10 @@
+<command>
+Usage: may login USERNAME PASSWORD
+</command>
+<variables>
+username: {{USERNAME}}
+password: {{PASSWORD}} 
+</variables>
 <query>
 mutation login($username: String!, $password: String!){
   tokenAuth(username: $username, password: $password){

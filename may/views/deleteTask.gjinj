@@ -1,0 +1,17 @@
+<query>
+mutation completeTask($input: DeleteTaskMutationInput!){
+  taskDelete(input: $input){
+    id
+    name
+  }
+}
+</query>
+
+<display>
+{% if not errors %}
+{% set task = data.taskDelete %}
+Succesfully deleted {{task.name}}!
+{% else %}
+Error completing tasks: {{ errors }}
+{% endif %}
+</display>

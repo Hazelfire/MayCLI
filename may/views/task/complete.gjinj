@@ -1,0 +1,28 @@
+<command>
+Usage: may task complete TASK
+</command>
+<variables>
+input:
+  id: {{TASK}}
+  done: true
+</variables>
+<query>
+mutation completeTask($input: UpdateTaskMutationInput!){
+  taskUpdate(input: $input){
+    id
+      errors{
+      messages
+      }
+  }
+}
+</query>
+
+<display>
+{% if not errors %}
+{% set task = data.taskUpdate %}
+Succesfully completed {{task.id}}!
+{{task.errors}}
+{% else %}
+Error completing tasks: {{ errors }}
+{% endif %}
+</display>

@@ -1,0 +1,18 @@
+<command>
+Usage: may urgency
+
+Returns the amount of hours of work needed to get the task done by
+it's due date
+</command>
+<query>
+query urgency{
+  statistics {urgency}
+}
+</query>
+<display>
+{% if not errors %}
+{{data.statistics.urgency}}
+{% else %}
+Error loading task
+{% endif %}
+</display>

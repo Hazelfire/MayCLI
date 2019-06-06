@@ -1,3 +1,6 @@
+<command>
+Usage: may task list
+</command>
 <query>
 query getTasks{
   allTasks {

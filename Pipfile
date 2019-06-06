@@ -9,6 +9,7 @@ verify_ssl = true
 requests = "*"
 click = "*"
 dateparser = "*"
+docopt = "*"
 
 [requires]
 python_version = "3.7"
