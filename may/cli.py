@@ -22,13 +22,16 @@ BASE_URL = "http://localhost:8000/graphql"
 
 def get_view_file(arguments):
     if len(arguments) > 1 and not arguments[1].startswith("-"):
-        view_file = read_text("may.views." + arguments[0], arguments[1] + ".gjinj")
+        try:
+            return read_text("may.views." + arguments[0], arguments[1] + ".gjinj")
+        except ModuleNotFoundError:
+            return read_text("may.views", arguments[0] + ".gjinj")
     else:
         view_file = read_text("may.views", arguments[0] + ".gjinj")
     return view_file
 
 
-def run_view(docs, arguments):
+def run_view(docs, arguments, verbose=False):
     """ Runs a may view """
 
     # Getting the view
@@ -48,13 +51,20 @@ def run_view(docs, arguments):
     # Create graphql variables from that
     variables = {}
     if "variables" in documents:
-        variables = yaml.load(Template(documents["variables"].body).render(args))
+        variables = yaml.load(Template(documents["variables"].body).render({'args': args}))
 
 
     # Add Auth token
     session = requests.Session()
     if "token" in conf:
         session.headers.update({"Authorization": "JWT " + conf["token"]})
+
+    if verbose:
+        print("Query:")
+        print(documents["query"].body)
+
+        print("Variables:")
+        print(variables)
 
     
     # Make request
@@ -66,6 +76,10 @@ def run_view(docs, arguments):
         },
     ).json()
 
+    if verbose:
+        print("Response:")
+        print(response)
+
     # View request
     display = Template(documents["display"].body.strip()).render({
         **response,
@@ -74,19 +88,24 @@ def run_view(docs, arguments):
     print(display)
 
 doc = """
-Usage: may [--version] [--help] [<command>] [<args>...]
+Usage: may [-v] [--version] [--help] [<command>] [<args>...]
 
 Commands include:
     task
     folder
     login
+
+Options:
+    -v         Verbose, prints query and response information
+    --version  Prints the version and then exist
+    --help     Displays this help page
 """
 
 def cli():
     """ Main entry point """
     args = docopt(doc, version="May version 0.0.1", options_first=True, help=True)
     if args["<command>"]:
-        run_view(doc, [args["<command>"]] + args["<args>"])
+        run_view(doc, [args["<command>"]] + args["<args>"], verbose=args["-v"])
     else:
         print(doc.strip())
             

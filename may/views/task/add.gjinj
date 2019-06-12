@@ -3,8 +3,8 @@ Usage: may task add NAME DURATION
 </command>
 <variables>
 input:
-  name: {{NAME}}
-  duration: {{DURATION}}
+  name: {{args.NAME}}
+  duration: {{args.DURATION}}
 </variables>
 <query>
 mutation addTask($input: CreateTaskMutationInput!){
@@ -15,7 +15,7 @@ mutation addTask($input: CreateTaskMutationInput!){
 }
 </query>
 <display>
-{% if data %}
+{% if not errors %}
 {% set task = data.taskAdd %}
 Successfully created task!
   Id: {{task.id}}

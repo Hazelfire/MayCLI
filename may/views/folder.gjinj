@@ -1,0 +1,36 @@
+<command>
+Usage: may folder [-i] [--help]
+
+Options:
+  -i      Prints with folder ids
+  --help  Prints this help screen 
+
+
+Lists all folders
+</command>
+<query>
+query getFolder{
+  allFolders {
+    edges {
+      node {
+        id
+        name
+        root
+      }
+    }
+  }
+}
+</query>
+
+<display>
+{% if not errors %}
+Folders:
+{% if data.allFolders.edges | length == 0 %}You don't have any folders{% endif -%}
+{% for folder in data.allFolders.edges -%}
+  - {{folder.node.id if args["-i"] }} {{ folder.node.name }} {{ "(Root)" if folder.node.root }}
+{% endfor %}
+
+{% else %}
+Error gettings folders: {{ errors }}
+{% endif %}
+</display>

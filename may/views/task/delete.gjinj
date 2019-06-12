@@ -1,3 +1,17 @@
+<command>
+Usage: may task delete [--help] TASKID
+
+Deletes a task from may
+
+Options:
+  --help  Prints this help message
+</command>
+
+<variables>
+input:
+  id: {{TASKID}}
+</variables>
+
 <query>
 mutation completeTask($input: DeleteTaskMutationInput!){
   taskDelete(input: $input){

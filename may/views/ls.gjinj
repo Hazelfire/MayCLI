@@ -1,0 +1,34 @@
+<command>
+Usage: may ls [--help]
+
+Options:
+  --help  Prints this help screen 
+
+Lists the current contents of your root directory
+</command>
+<query>
+query list{
+  rootFolder {
+    items {
+      edges {
+        node {
+          id
+          name
+        }
+      }
+    }
+  }
+}
+</query>
+
+<display>
+{% if not errors %}
+Tasks:
+{% if data.rootFolder["items"].edges | length == 0 %}You don't have any tasks{% endif -%}
+{% for task in data.rootFolder["items"].edges -%}
+  - {{task.node.id if args["-i"] }} {{ task.node.name }}
+{% endfor %}
+{% else %}
+Error listing: {{ errors }}
+{% endif %}
+</display>

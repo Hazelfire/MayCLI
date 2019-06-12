@@ -2,8 +2,8 @@
 Usage: may login USERNAME PASSWORD
 </command>
 <variables>
-username: {{USERNAME}}
-password: {{PASSWORD}} 
+username: {{args.USERNAME}}
+password: {{args.PASSWORD}} 
 </variables>
 <query>
 mutation login($username: String!, $password: String!){

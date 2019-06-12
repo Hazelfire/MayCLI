@@ -1,8 +1,9 @@
 <command>
-Usage: may task [-i] [--help] [SUBCOMMAND]
+Usage: may task [-if] [--help] [SUBCOMMAND]
 
 Options:
   -i      Prints with task ids
+  -f      Prints with the folder the task is in
   --help  Prints this help screen 
 
 
@@ -12,14 +13,21 @@ Subcommands:
   complete  Completes a task
 
 </command>
+<variables>
+includeId: {{args["-i"]}}
+includeFolder: {{args["-f"]}}
+</variables>
 <query>
-query getTasks{
+query getTasks($includeId: Boolean!, $includeFolder: Boolean!){
   allTasks {
     edges {
       node {
-        id
+        id @include(if: $includeId)
         name
         done
+        parent @include(if: $includeFolder){
+          name
+        }
       }
     }
   }
@@ -31,10 +39,10 @@ query getTasks{
 Tasks:
 {% if data.allTasks.edges | length == 0 %}You don't have any tasks{% endif -%}
 {% for task in data.allTasks.edges -%}
-  - {{task.node.id if args["-i"] }} {{ task.node.name }}
+  - {{task.node.id if args["-i"] }} {{ task.node.name }} {{ "In: " + task.node.parent.name if task.node.parent }}
 {% endfor %}
 
 {% else %}
-Error loging in: {{ errors }}
+Error gettings tasks: {{ errors }}
 {% endif %}
 </display>
