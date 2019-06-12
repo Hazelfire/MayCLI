@@ -66,26 +66,28 @@ def run_view(docs, arguments, verbose=False):
         print("Variables:")
         print(variables)
 
-    
     # Make request
-    response= session.post(
-        BASE_URL,
-        data={
-            "query": documents["query"].body,
-            "variables": json.dumps(variables),
-        },
-    ).json()
+    try:
+        response = session.post(
+            BASE_URL,
+            data={
+                "query": documents["query"].body,
+                "variables": json.dumps(variables),
+            },
+        ).json()
+        if verbose:
+            print("Response:")
+            print(response)
 
-    if verbose:
-        print("Response:")
-        print(response)
+        # View request
+        display = Template(documents["display"].body.strip()).render({
+            **response,
+            'args': dict(args)
+        }).strip()
+        print(display)
+    except ConnectionError:
+        print("Could not connect to may")
 
-    # View request
-    display = Template(documents["display"].body.strip()).render({
-        **response,
-        'args': dict(args)
-    }).strip()
-    print(display)
 
 doc = """
 Usage: may [-v] [--version] [--help] [<command>] [<args>...]

@@ -9,14 +9,18 @@ input CreateFolderMutationInput {
   clientMutationId: String
 }
 
-"""Creates a folder """
+"""
+Creates a folder
+"""
 type CreateFolderMutationPayload {
   id: String
   name: String
   root: Boolean
   parent: String
 
-  """May contain more than one error for same field."""
+  """
+  May contain more than one error for same field.
+  """
   errors: [ErrorType]
   clientMutationId: String
 }
@@ -28,13 +32,17 @@ input CreateLabelMutationInput {
   clientMutationId: String
 }
 
-"""Creates a label """
+"""
+Creates a label
+"""
 type CreateLabelMutationPayload {
   id: String
   name: String
   color: String
 
-  """May contain more than one error for same field."""
+  """
+  May contain more than one error for same field.
+  """
   errors: [ErrorType]
   clientMutationId: String
 }
@@ -52,7 +60,9 @@ input CreateTaskMutationInput {
   clientMutationId: String
 }
 
-"""Creates a task """
+"""
+Creates a task
+"""
 type CreateTaskMutationPayload {
   id: String
   name: String
@@ -64,7 +74,9 @@ type CreateTaskMutationPayload {
   due: DateTime
   ownerId: String
 
-  """May contain more than one error for same field."""
+  """
+  May contain more than one error for same field.
+  """
   errors: [ErrorType]
   clientMutationId: String
 }
@@ -81,14 +93,18 @@ input DeleteFolderMutationInput {
   clientMutationId: String
 }
 
-"""Deletes a folder given"""
+"""
+Deletes a folder given
+"""
 type DeleteFolderMutationPayload {
   id: String
   name: String
   root: Boolean
   parent: String
 
-  """May contain more than one error for same field."""
+  """
+  May contain more than one error for same field.
+  """
   errors: [ErrorType]
   clientMutationId: String
 }
@@ -98,13 +114,17 @@ input DeleteLabelMutationInput {
   clientMutationId: String
 }
 
-"""Deletes a label given"""
+"""
+Deletes a label given
+"""
 type DeleteLabelMutationPayload {
   id: String
   name: String
   color: String
 
-  """May contain more than one error for same field."""
+  """
+  May contain more than one error for same field.
+  """
   errors: [ErrorType]
   clientMutationId: String
 }
@@ -114,7 +134,9 @@ input DeleteTaskMutationInput {
   clientMutationId: String
 }
 
-"""Deletes a task given"""
+"""
+Deletes a task given
+"""
 type DeleteTaskMutationPayload {
   id: String
   name: String
@@ -126,7 +148,9 @@ type DeleteTaskMutationPayload {
   due: DateTime
   ownerId: String
 
-  """May contain more than one error for same field."""
+  """
+  May contain more than one error for same field.
+  """
   errors: [ErrorType]
   clientMutationId: String
 }
@@ -137,13 +161,35 @@ type ErrorType {
 }
 
 type FolderNode implements Node {
-  """The ID of the object."""
+  """
+  The ID of the object.
+  """
   id: ID!
   name: String!
   root: Boolean!
   parent: FolderNode
-  tasks(before: String, after: String, first: Int, last: Int, duration: String, due: DateTime, done: Boolean, parent: ID, dependencies: [ID], labels: [ID]): TaskNodeConnection
-  folders(before: String, after: String, first: Int, last: Int, id: UUID, name: String, root: Boolean, parent: ID): FolderNodeConnection
+  tasks(
+    before: String
+    after: String
+    first: Int
+    last: Int
+    duration: String
+    due: DateTime
+    done: Boolean
+    parent: ID
+    dependencies: [ID]
+    labels: [ID]
+  ): TaskNodeConnection
+  folders(
+    before: String
+    after: String
+    first: Int
+    last: Int
+    id: UUID
+    name: String
+    root: Boolean
+    parent: ID
+  ): FolderNodeConnection
 }
 
 type FolderNodeConnection {
@@ -152,10 +198,14 @@ type FolderNodeConnection {
 }
 
 type FolderNodeEdge {
-  """The item at the end of the edge"""
+  """
+  The item at the end of the edge
+  """
   node: FolderNode
 
-  """A cursor for use in pagination"""
+  """
+  A cursor for use in pagination
+  """
   cursor: String!
 }
 
@@ -167,11 +217,24 @@ String, Boolean, Int, Float, List or Object.
 scalar GenericScalar
 
 type LabelNode implements Node {
-  """The ID of the object."""
+  """
+  The ID of the object.
+  """
   id: ID!
   name: String!
   color: String!
-  taskSet(before: String, after: String, first: Int, last: Int, duration: String, due: DateTime, done: Boolean, parent: ID, dependencies: [ID], labels: [ID]): TaskNodeConnection
+  taskSet(
+    before: String
+    after: String
+    first: Int
+    last: Int
+    duration: String
+    due: DateTime
+    done: Boolean
+    parent: ID
+    dependencies: [ID]
+    labels: [ID]
+  ): TaskNodeConnection
 }
 
 type LabelNodeConnection {
@@ -180,10 +243,14 @@ type LabelNodeConnection {
 }
 
 type LabelNodeEdge {
-  """The item at the end of the edge"""
+  """
+  The item at the end of the edge
+  """
   node: LabelNode
 
-  """A cursor for use in pagination"""
+  """
+  A cursor for use in pagination
+  """
   cursor: String!
 }
 
@@ -202,43 +269,91 @@ type Mutation {
   refreshToken(token: String!): Refresh
 }
 
-"""An object with an ID"""
+"""
+An object with an ID
+"""
 interface Node {
-  """The ID of the object."""
+  """
+  The ID of the object.
+  """
   id: ID!
 }
 
-"""Obtain JSON Web Token mutation"""
+"""
+Obtain JSON Web Token mutation
+"""
 type ObtainJSONWebToken {
   token: String
 }
 
 type PageInfo {
-  """When paginating forwards, are there more items?"""
+  """
+  When paginating forwards, are there more items?
+  """
   hasNextPage: Boolean!
 
-  """When paginating backwards, are there more items?"""
+  """
+  When paginating backwards, are there more items?
+  """
   hasPreviousPage: Boolean!
 
-  """When paginating backwards, the cursor to continue."""
+  """
+  When paginating backwards, the cursor to continue.
+  """
   startCursor: String
 
-  """When paginating forwards, the cursor to continue."""
+  """
+  When paginating forwards, the cursor to continue.
+  """
   endCursor: String
 }
 
 type Query {
-  """The ID of the object"""
+  """
+  The ID of the object
+  """
   task(id: ID!): TaskNode
-  allTasks(before: String, after: String, first: Int, last: Int, duration: String, due: DateTime, done: Boolean, parent: ID, dependencies: [ID], labels: [ID]): TaskNodeConnection
+  allTasks(
+    before: String
+    after: String
+    first: Int
+    last: Int
+    duration: String
+    due: DateTime
+    done: Boolean
+    parent: ID
+    dependencies: [ID]
+    labels: [ID]
+  ): TaskNodeConnection
 
-  """The ID of the object"""
+  """
+  The ID of the object
+  """
   folder(id: ID!): FolderNode
-  allFolders(before: String, after: String, first: Int, last: Int, id: UUID, name: String, root: Boolean, parent: ID): FolderNodeConnection
+  allFolders(
+    before: String
+    after: String
+    first: Int
+    last: Int
+    id: UUID
+    name: String
+    root: Boolean
+    parent: ID
+  ): FolderNodeConnection
 
-  """The ID of the object"""
+  """
+  The ID of the object
+  """
   label(id: ID!): LabelNode
-  allLabels(before: String, after: String, first: Int, last: Int, name: String, color: String, id: UUID): LabelNodeConnection
+  allLabels(
+    before: String
+    after: String
+    first: Int
+    last: Int
+    name: String
+    color: String
+    id: UUID
+  ): LabelNodeConnection
   statistics: StatisticsNode
 }
 
@@ -251,20 +366,63 @@ type StatisticsNode {
   urgency: Float
   velocity: Float
   bait: Float
-  todo(before: String, after: String, first: Int, last: Int, duration: String, due: DateTime, done: Boolean, parent: ID, dependencies: [ID], labels: [ID]): TaskNodeConnection
+  todo(
+    before: String
+    after: String
+    first: Int
+    last: Int
+    duration: String
+    due: DateTime
+    done: Boolean
+    parent: ID
+    dependencies: [ID]
+    labels: [ID]
+  ): TaskNodeConnection
 }
 
 type TaskNode implements Node {
-  """The ID of the object."""
+  """
+  The ID of the object.
+  """
   id: ID!
   name: String!
   duration: Float!
   due: DateTime
   done: Boolean!
   parent: FolderNode
-  dependencies(before: String, after: String, first: Int, last: Int, duration: String, due: DateTime, done: Boolean, parent: ID, dependencies: [ID], labels: [ID]): TaskNodeConnection
-  labels(before: String, after: String, first: Int, last: Int, name: String, color: String, id: UUID): LabelNodeConnection
-  dependents(before: String, after: String, first: Int, last: Int, duration: String, due: DateTime, done: Boolean, parent: ID, dependencies: [ID], labels: [ID]): TaskNodeConnection
+  dependencies(
+    before: String
+    after: String
+    first: Int
+    last: Int
+    duration: String
+    due: DateTime
+    done: Boolean
+    parent: ID
+    dependencies: [ID]
+    labels: [ID]
+  ): TaskNodeConnection
+  labels(
+    before: String
+    after: String
+    first: Int
+    last: Int
+    name: String
+    color: String
+    id: UUID
+  ): LabelNodeConnection
+  dependents(
+    before: String
+    after: String
+    first: Int
+    last: Int
+    duration: String
+    due: DateTime
+    done: Boolean
+    parent: ID
+    dependencies: [ID]
+    labels: [ID]
+  ): TaskNodeConnection
   urgency: Float
 }
 
@@ -274,10 +432,14 @@ type TaskNodeConnection {
 }
 
 type TaskNodeEdge {
-  """The item at the end of the edge"""
+  """
+  The item at the end of the edge
+  """
   node: TaskNode
 
-  """A cursor for use in pagination"""
+  """
+  A cursor for use in pagination
+  """
   cursor: String!
 }
 
@@ -288,14 +450,18 @@ input UpdateFolderMutationInput {
   clientMutationId: String
 }
 
-"""Updates a folder given"""
+"""
+Updates a folder given
+"""
 type UpdateFolderMutationPayload {
   id: String
   name: String
   root: Boolean
   parent: String
 
-  """May contain more than one error for same field."""
+  """
+  May contain more than one error for same field.
+  """
   errors: [ErrorType]
   clientMutationId: String
 }
@@ -306,13 +472,17 @@ input UpdateLabelMutationInput {
   clientMutationId: String
 }
 
-"""Updates a label given"""
+"""
+Updates a label given
+"""
 type UpdateLabelMutationPayload {
   id: String
   name: String
   color: String
 
-  """May contain more than one error for same field."""
+  """
+  May contain more than one error for same field.
+  """
   errors: [ErrorType]
   clientMutationId: String
 }
@@ -329,7 +499,9 @@ input UpdateTaskMutationInput {
   clientMutationId: String
 }
 
-"""Updates a task given"""
+"""
+Updates a task given
+"""
 type UpdateTaskMutationPayload {
   id: String
   name: String
@@ -341,12 +513,16 @@ type UpdateTaskMutationPayload {
   due: DateTime
   ownerId: String
 
-  """May contain more than one error for same field."""
+  """
+  May contain more than one error for same field.
+  """
   errors: [ErrorType]
   clientMutationId: String
 }
 
-"""UUID"""
+"""
+UUID
+"""
 scalar UUID
 
 type Verify {
