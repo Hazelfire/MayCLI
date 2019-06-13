@@ -28,8 +28,6 @@ Successfully created task!
   Id: {{task.id}}
   Name: {{task.name}}
   Due: {{task.due}}
-Errors:
-{{task.errors}}
 {% else %}
 Error creating task: {{ errors }}
 {% endif %}

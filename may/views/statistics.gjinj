@@ -14,9 +14,9 @@ query urgency{
 </query>
 <display>
 {% if not errors %}
-Urgency: {{data.statistics.urgency}}
-Velocity: {{data.statistics.velocity}}
-Bait: {{data.statistics.bait}}
+Urgency: {{ "%0.2f" % data.statistics.urgency}}
+Velocity: {{ "%0.2f" % data.statistics.velocity}}
+Bait: {{ "%0.2f" % data.statistics.bait}}
 {% else %}
 Error loading statistics: {{errors}}
 {% endif %}

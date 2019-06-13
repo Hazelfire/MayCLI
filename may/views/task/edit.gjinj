@@ -1,18 +1,22 @@
 <command>
-Usage: may task edit [--help] TASK [--due DUEDATE] [--duration DURATION]
+Usage: may task edit [--help] TASK [--due DUEDATE]
+                                   [--duration DURATION]
+                                   [--name NAME]
 
 Edits the task with the given id
 
 Options:
   --due DUEDATE        Changes the due date to the date given (human readable date)
   --duration DURATION  Changes the duration of a task (in hours)
+  --name NAME          Changes the name of the task
   --help               Prints this help message
 </command>
 <variables>
 input:
-  id: {{args.TASK}}
+  id: {{get_real_id(args.TASK)}}
   {{"due: \"" + parse_date(args["--due"])+"\"" if args["--due"]}}
   {{"duration: " + (args["--duration"]|int * 3600)|string if args["--duration"]}}
+  {{"name: " + args["--name"] if args["--name"]}}
 </variables>
 <query>
 mutation completeTask($input: UpdateTaskMutationInput!){

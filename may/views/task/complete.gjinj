@@ -3,16 +3,14 @@ Usage: may task complete TASK
 </command>
 <variables>
 input:
-  id: {{args.TASK}}
+  id: {{get_real_id(args.TASK)}}
   done: true
 </variables>
 <query>
 mutation completeTask($input: UpdateTaskMutationInput!){
   taskUpdate(input: $input){
     id
-      errors{
-      messages
-      }
+    name
   }
 }
 </query>
@@ -20,7 +18,7 @@ mutation completeTask($input: UpdateTaskMutationInput!){
 <display>
 {% if not errors %}
 {% set task = data.taskUpdate %}
-Succesfully completed {{task.id}}!
+Succesfully completed {{task.name}}!
 {% else %}
 Error completing tasks: {{ errors }}
 {% endif %}
