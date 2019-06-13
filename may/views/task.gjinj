@@ -1,25 +1,35 @@
 <command>
-Usage: may task [-if] [--help] [SUBCOMMAND]
+Usage: may task [-adfi] [--help] [SUBCOMMAND]
+
+Lists all tasks
 
 Options:
-  -i      Prints with task ids
+  --id    Prints with task ids
+  -a      Prints all tasks
+  -d      Prints the due dates
   -f      Prints with the folder the task is in
+  -i      Prints the id along with the task
   --help  Prints this help screen 
 
 
-Lists all tasks on its own, has the following subcommands:
+Has the subcommands
+
 Subcommands:
   add       Adds a new task
   complete  Completes a task
+  edit      Edits a task's properties
+  delete    Deletes a task
 
 </command>
 <variables>
 includeId: {{args["-i"]}}
 includeFolder: {{args["-f"]}}
+includeDueDates: {{args["-d"]}}
+{{ "doneFilter: False" if not args["-a"]  }}
 </variables>
 <query>
-query getTasks($includeId: Boolean!, $includeFolder: Boolean!){
-  allTasks {
+query getTasks($includeId: Boolean!, $includeFolder: Boolean!, $includeDueDates: Boolean!, $doneFilter: Boolean){
+  allTasks(done: $doneFilter) {
     edges {
       node {
         id @include(if: $includeId)
@@ -28,6 +38,7 @@ query getTasks($includeId: Boolean!, $includeFolder: Boolean!){
         parent @include(if: $includeFolder){
           name
         }
+        due @include(if: $includeDueDates)
       }
     }
   }
@@ -39,7 +50,7 @@ query getTasks($includeId: Boolean!, $includeFolder: Boolean!){
 Tasks:
 {% if data.allTasks.edges | length == 0 %}You don't have any tasks{% endif -%}
 {% for task in data.allTasks.edges -%}
-  - {{task.node.id if args["-i"] }} {{ task.node.name }} {{ "In: " + task.node.parent.name if task.node.parent }}
+  - {{get_easy_id(task.node.id, hint=task.node.name) if args["-i"] }} {{ task.node.name }} {{ "(" + task.node.parent.name + ")" if task.node.parent }} {{ task.node.due }}
 {% endfor %}
 
 {% else %}

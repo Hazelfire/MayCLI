@@ -1,16 +1,23 @@
 <command>
-Usage: may task add NAME DURATION
+Usage: may task add NAME DURATION [--due DUEDATE]
+
+Adds a task to your task list
+
+Options:
+  --due DUEDATE  Specifies a due date for the task
 </command>
 <variables>
 input:
   name: {{args.NAME}}
-  duration: {{args.DURATION}}
+  duration: {{(args.DURATION|int * 3600)|string }}
+  {{ "due: \"" + parse_date(args["--due"]) +"\"" if args["--due"] }}
 </variables>
 <query>
 mutation addTask($input: CreateTaskMutationInput!){
   taskAdd(input: $input) {
     id
     name
+    due
   }
 }
 </query>
@@ -20,6 +27,7 @@ mutation addTask($input: CreateTaskMutationInput!){
 Successfully created task!
   Id: {{task.id}}
   Name: {{task.name}}
+  Due: {{task.due}}
 Errors:
 {{task.errors}}
 {% else %}

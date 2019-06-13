@@ -1,0 +1,50 @@
+<command>
+Usage: may todo [-if] [--help] [SUBCOMMAND]
+
+Options:
+  -i      Prints with task ids
+  -f      Prints with the folder the task is in
+  --help  Prints this help screen 
+
+
+Lists all tasks on its own, has the following subcommands:
+Subcommands:
+  add       Adds a new task
+  complete  Completes a task
+
+</command>
+<variables>
+includeId: {{args["-i"]}}
+includeFolder: {{args["-f"]}}
+</variables>
+<query>
+query getTodo($includeId: Boolean!, $includeFolder: Boolean!){
+  statistics {
+    todo {
+      edges {
+        node {
+          id @include(if: $includeId)
+          name
+          done
+          parent @include(if: $includeFolder){
+            name
+          }
+        }
+      }
+    }
+  }
+}
+</query>
+
+<display>
+{% if not errors %}
+Tasks:
+{% if data.statistics.todo.edges | length == 0 %}You don't have any tasks{% endif -%}
+{% for task in data.statistics.todo.edges -%}
+  - {{task.node.id if args["-i"] }} {{ task.node.name }} {{ "In: " + task.node.parent.name if task.node.parent }}
+{% endfor %}
+
+{% else %}
+Error gettings tasks: {{ errors }}
+{% endif %}
+</display>

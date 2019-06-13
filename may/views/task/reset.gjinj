@@ -1,18 +1,16 @@
 <command>
-Usage: may task complete TASK
+Usage: may task reset TASK
 </command>
 <variables>
 input:
   id: {{args.TASK}}
-  done: true
+  done: false
 </variables>
 <query>
-mutation completeTask($input: UpdateTaskMutationInput!){
+mutation resetTask($input: UpdateTaskMutationInput!){
   taskUpdate(input: $input){
     id
-      errors{
-      messages
-      }
+    name
   }
 }
 </query>
@@ -20,7 +18,7 @@ mutation completeTask($input: UpdateTaskMutationInput!){
 <display>
 {% if not errors %}
 {% set task = data.taskUpdate %}
-Succesfully completed {{task.id}}!
+Succesfully reset {{task.name}}!
 {% else %}
 Error completing tasks: {{ errors }}
 {% endif %}
