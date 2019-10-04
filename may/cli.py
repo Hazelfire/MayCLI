@@ -41,6 +41,7 @@ def get_view_file(arguments):
 
 
 def get_easy_id(big_id, hint=None):
+    return big_id
     if big_id not in conf["ids"]:
         ids = conf["ids"]
         easy_id = "".join([word[0] for word in hint.split(" ")])
@@ -56,10 +57,11 @@ def get_easy_id(big_id, hint=None):
         return conf["ids"][big_id]
 
 def get_real_id(easy_id):
+    return easy_id
     for real_id, value in conf["ids"].items():
         if value == easy_id:
             return real_id
-    return None
+    return easy_id
 
 
 def run_view(docs, arguments, verbose=False):
@@ -82,7 +84,7 @@ def run_view(docs, arguments, verbose=False):
     # Create graphql variables from that
     variables = {}
     if "variables" in documents:
-        variables = yaml.load(Template(documents["variables"].body).render({
+        variables = yaml.safe_load(Template(documents["variables"].body).render({
             'args': args,
             'parse_date': parse_date,
             'get_real_id': get_real_id
@@ -103,16 +105,18 @@ def run_view(docs, arguments, verbose=False):
 
     # Make request
     try:
-        response = session.post(
+        response_object = session.post(
             BASE_URL,
             data={
                 "query": documents["query"].body,
                 "variables": json.dumps(variables),
             },
-        ).json()
+        )
         if verbose:
             print("Response:")
-            print(response)
+            print(response_object.text)
+
+        response = response_object.json()
 
         # View request
         display = Template(documents["display"].body.strip()).render({

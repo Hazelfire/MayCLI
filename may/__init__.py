@@ -7,3 +7,4 @@ Description: May api cli
 """
 
 from .cli import cli
+from .api import call

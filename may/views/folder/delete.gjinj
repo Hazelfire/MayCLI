@@ -1,0 +1,31 @@
+<command>
+Usage: may folder delete [--help] FOLDERID
+
+Deletes a folder from may
+
+Options:
+  --help  Prints this help message
+</command>
+
+<variables>
+input:
+  id: {{args.FOLDERID}}
+</variables>
+
+<query>
+mutation deleteFolder($input: DeleteFolderMutationInput!){
+  folderDelete(input: $input){
+    id
+    name
+  }
+}
+</query>
+
+<display>
+{% if not errors %}
+{% set folder = data.folderDelete %}
+Succesfully deleted {{folder.name}}!
+{% else %}
+Error deleting folder: {{ errors }}
+{% endif %}
+</display>

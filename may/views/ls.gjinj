@@ -1,8 +1,9 @@
 <command>
-Usage: may ls [--help]
+Usage: may ls [-i] [--help]
 
 Options:
   --help  Prints this help screen 
+  -i      Lists the id of the item
 
 Lists the current contents of your root directory
 </command>
@@ -26,7 +27,7 @@ query list{
 Tasks:
 {% if data.rootFolder["items"].edges | length == 0 %}You don't have any tasks{% endif -%}
 {% for task in data.rootFolder["items"].edges -%}
-  - {{task.node.id if args["-i"] }} {{ task.node.name }}
+  - {{get_easy_id(task.node.id, hint=task.node.name) if args["-i"] }} {{ task.node.name }}
 {% endfor %}
 {% else %}
 Error listing: {{ errors }}

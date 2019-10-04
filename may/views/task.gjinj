@@ -1,5 +1,5 @@
 <command>
-Usage: may task [-adfi] [--help] [SUBCOMMAND]
+Usage: may task [-adfio] [--help] [SUBCOMMAND]
 
 Lists all tasks
 
@@ -9,6 +9,7 @@ Options:
   -d      Prints the due dates
   -f      Prints with the folder the task is in
   -i      Prints the id along with the task
+  -o      Only include orphaned tasks (tasks without a due date)
   --help  Prints this help screen 
 
 
@@ -21,12 +22,14 @@ Subcommands:
   delete    Deletes a task
 
 </command>
+
 <variables>
 includeId: {{args["-i"]}}
 includeFolder: {{args["-f"]}}
 includeDueDates: {{args["-d"]}}
 {{ "doneFilter: False" if not args["-a"]  }}
 </variables>
+
 <query>
 query getTasks($includeId: Boolean!, $includeFolder: Boolean!, $includeDueDates: Boolean!, $doneFilter: Boolean){
   allTasks(done: $doneFilter) {
@@ -39,6 +42,7 @@ query getTasks($includeId: Boolean!, $includeFolder: Boolean!, $includeDueDates:
           name
         }
         due @include(if: $includeDueDates)
+        orphaned
       }
     }
   }
@@ -50,7 +54,9 @@ query getTasks($includeId: Boolean!, $includeFolder: Boolean!, $includeDueDates:
 Tasks:
 {% if data.allTasks.edges | length == 0 %}You don't have any tasks{% endif -%}
 {% for task in data.allTasks.edges -%}
-  - {{get_easy_id(task.node.id, hint=task.node.name) if args["-i"] }} {{ task.node.name }} {{ "(" + task.node.parent.name + ")" if task.node.parent }} {{ task.node.due }}
+{% if not args["-o"] or task.node.orphaned -%}
+- {{get_easy_id(task.node.id, hint=task.node.name) if args["-i"] }} {{ task.node.name }} {{ "(" + task.node.parent.name + ")" if task.node.parent }} {{ task.node.due }}
+{% endif -%}
 {% endfor %}
 
 {% else %}

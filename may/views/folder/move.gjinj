@@ -1,0 +1,26 @@
+<command>
+Usage: may folder move FROM TO
+</command>
+<variables>
+input:
+  id: {{get_real_id(args.FROM)}}
+  parent: {{get_real_id(args.TO)}}
+</variables>
+<query>
+mutation moveFolder($input: UpdateFolderMutationInput!){
+  folderUpdate(input: $input){
+    id
+    name
+    parent
+  }
+}
+</query>
+
+<display>
+{% if not errors %}
+{% set folder = data.folderUpdate %}
+Succesfully moved {{folder.name}} to {{folder.parent}}!
+{% else %}
+Error moving folder: {{ errors }}
+{% endif %}
+</display>

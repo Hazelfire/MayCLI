@@ -1,0 +1,26 @@
+<command>
+Usage: may task move TASK FOLDER
+</command>
+<variables>
+input:
+  id: {{get_real_id(args.TASK)}}
+  parent: {{get_real_id(args.FOLDER)}}
+</variables>
+<query>
+mutation moveTask($input: UpdateTaskMutationInput!){
+  taskUpdate(input: $input){
+    id
+    name
+    parent
+  }
+}
+</query>
+
+<display>
+{% if not errors %}
+{% set task = data.taskUpdate %}
+Succesfully moved {{task.name}} to {{task.parent}}!
+{% else %}
+Error moving task: {{ errors }}
+{% endif %}
+</display>

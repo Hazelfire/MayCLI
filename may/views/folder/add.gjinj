@@ -1,0 +1,28 @@
+<command>
+Usage: may folder add NAME
+
+Adds a folder
+
+</command>
+<variables>
+input:
+  name: {{args.NAME}}
+</variables>
+<query>
+mutation addFolder($input: CreateFolderMutationInput!){
+  folderAdd(input: $input) {
+    id
+    name
+  }
+}
+</query>
+<display>
+{% if not errors %}
+{% set folder = data.folderAdd %}
+Successfully created folder!
+  Id: {{folder.id}}
+  Name: {{folder.name}}
+{% else %}
+Error creating folder: {{ errors }}
+{% endif %}
+</display>
